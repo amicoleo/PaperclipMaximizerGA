@@ -1,0 +1,16 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background-color: red; /* same colour of container */
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+#container{
+  height: 100%;
+  width: 100%;
+  background-color: red;
+}
