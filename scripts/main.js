@@ -1,113 +1,167 @@
-(function(){
+var target = [
+  [30, 72],
+  [30, 13],
+  [49, 0],
+  [69, 13],
+  [69, 90],
+  [51, 100],
+  [41, 89],
+  [41, 30],
+  [50, 23],
+  [58, 31],
+  [58, 70]
+]
 
-  var target = "There was a time in which I liked to go swimming in the lake"
-  var mutationRate = 0.001
-  var nPopulation = 5000
+var mutationRate = 0.00002
+var nPopulation = 2000
 
-  class DNA {
+var paperclips = []
 
-    //init as random string of same length of target
-    constructor(){
-      this.genes = []
-      this.genes.length = target.length
-      for (var i = 0; i < this.genes.length; i++) {
-        this.genes[i] =  String.fromCharCode(32 + Math.random()*(128 - 32))
-      }
-    }
+//
+var customFitnessFunction = function(genes){
+  var maxDistance = Math.sqrt(2)*100
 
-    //
-    calculateFitness() {
-      var score = 0;
-      for (var i = 0; i < this.genes.length; i++) {
-        if (this.genes[i] == target[i]) {
-          score++
-        }
-      }
-
-      this.fitness = score/target.length
-      this.fitness = (Math.pow(5, this.fitness)-1)*.25
-      if (this.fitness > 1) this.fitness = 1
-    }
-
-    //Cross current with another DNA and return child
-    crossover(partner){
-      var child = new DNA()
-      var midpoint = parseInt(Math.random()*this.genes.length)
-      for (var i=0; i<this.genes.length; i++){
-        if (i < midpoint) child.genes[i] = this.genes[i]
-        else child.genes[i] = partner.genes[i]
-      }
-      return child
-    }
-
-    mutate(mutationRate){
-      for (var i = 0; i < this.genes.length; i++) {
-        if (Math.random() < mutationRate) {
-          this.genes[i] = String.fromCharCode(32 + Math.random()*(128 - 32))
-        }
-      }
-    }
-
+  var accDistance = 0
+  for (var i=0; i<target.length; i++){
+    var distance = dist(target[i][0], target[i][1], genes[i][0], genes[i][1])
+    var normDistance = distance/maxDistance
+    accDistance+=normDistance
   }
+  var fitness = (1 - accDistance/target.length)
 
-  //Setup
-  var population = []
+  return fitness
+
+}
+
+//Setup
+var population = []
+
+var setup = function(){
+
+  createCanvas(windowWidth, windowHeight);
+
+  //create nPopulation elements with same genes as target
   for (var i=0; i<nPopulation; i++){
-    population.push(new DNA())
+    population.push(new DNAVector(target, customFitnessFunction))
   }
+}
 
-  var loop = function(){
-
-    // /LOOP
-    //Fitness
-    for (var i=0; i<population.length; i++){
-      population[i].calculateFitness()
+var mate = function(){
+  var matingPool = []
+  for (var i = 0; i < population.length; i++){
+    var n = parseInt(population[i].fitness * 100)
+    for (var j=0; j < n; j++){
+      matingPool.push(population[i]);
     }
-    // console.log(population[0].fitness);
-    printBestChild()
-
-    //Mating Pool
-    var matingPool = []
-    for (var i = 0; i < population.length; i++){
-      var n = parseInt(population[i].fitness * 100)
-      for (var j=0; j < n; j++){
-        matingPool.push(population[i]);
-      }
-    }
-
-    //Mating!
-    for (var i = 0; i < population.length; i++){
-      var a = parseInt(matingPool.length*Math.random())
-      var b = parseInt(matingPool.length*Math.random())
-      var parentA = matingPool[a]
-      var parentB = matingPool[b]
-      var child = parentA.crossover(parentB)
-      child.mutate(mutationRate)
-
-      population[i] = child
-
-    }
-    setTimeout(loop, 30)
   }
+  //Mating!
+  for (var i = 0; i < population.length; i++){
+    var a = parseInt(matingPool.length*Math.random())
+    var b = parseInt(matingPool.length*Math.random())
+    var parentA = matingPool[a]
+    var parentB = matingPool[b]
 
-  var printBestChild = function(){
-    var maxFitness = -1
-    var bestChild = -1
-    for (var i = 0; i<population.length; i++){
-      if (population[i].fitness > maxFitness) {
-        bestChild = i
-        maxFitness = population[i].fitness
-      }
-    }
+    var child = parentA.crossover(parentB)
+    child.mutate(mutationRate)
 
-    var string = ""
-    for (var i = 0; i< population[bestChild].genes.length; i++) string = string+population[bestChild].genes[i]
-
-    console.log(maxFitness, string)
+    population[i] = child
 
   }
 
-  loop()
+}
+
+var draw = function(){
+
+  // /LOOP
+  //1. Calculate fitness on dna
+  for (var i=0; i<population.length; i++){
+    population[i].calculateFitness()
+  }
 
 
-})()
+  if (frameCount%4 == 0) {
+    background(255, 255, 255)
+    drawBestChild()
+
+    for (key in paperclips){
+      push()
+      translate(paperclips[key].position.x, paperclips[key].position.y)
+      rotate(paperclips[key].rotation)
+      drawPaperclip(paperclips[key])
+      pop()
+    }
+  }
+
+
+
+
+  //2. Update generation
+  //Mating Pool
+  mate()
+
+}
+
+
+var getBestChildIndex = function(){
+
+  var maxFitness = -1
+  var bestChild = -1
+  for (var i = 0; i<population.length; i++){
+    if (population[i].fitness > maxFitness) {
+      bestChild = i
+      maxFitness = population[i].fitness
+    }
+  }
+
+  return bestChild
+
+}
+
+var drawPaperclip = function(element){
+
+  noFill()
+  beginShape()
+  for (var i=0; i<target.length; i++){
+    push()
+    vertex(element.genes[i][0], element.genes[i][1])
+    pop()
+  }
+  endShape()
+
+
+}
+
+var drawBestChild = function(){
+  push()
+
+  translate(width*.5 - 50, height*.5 - 50)
+  scale(2, 2)
+  drawPaperclip(population[getBestChildIndex()])
+
+  var fitnessInt = parseInt(population[getBestChildIndex()].fitness*100)
+
+  fill(255, 0, 0)
+  if (fitnessInt > 93){
+    text("PAPERCLIP!!!!!", 0, 100)
+    paperclips.push(population[getBestChildIndex()])
+  }else{
+    text("Confidence: "+fitnessInt, 0, 100)
+  }
+
+  pop()
+}
+
+
+var drawAll = function(){
+  for (var i=0; i<100; i++){
+    push()
+    translate(positions[i].x, positions[i].y)
+    drawPaperclip(population[i])
+    pop()
+  }
+}
+
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
