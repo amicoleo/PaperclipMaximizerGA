@@ -12,6 +12,8 @@ var target = [
   [58, 70]
 ]
 
+console.log(targets.gem);
+
 var mutationRate = 0.00002
 var nPopulation = 2000
 

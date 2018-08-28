@@ -11,9 +11,13 @@ v2
 Selective breed.
 All paperclips attempts appear on the screen. User can decide which to kill. After x time, there is a new generation of paperclip, using just the ones that the user didn't kill as mating pool.
 
-User can screenshot and share 
+User can screenshot and share
 
 
 ----
 
 - Needs to be very small population, to be able to influence the whole system just by judging one
+
+
+v3
+- Use multiple canvases, for the paperclips on top https://github.com/processing/p5.js/blob/9d161432cdbaec2d18a8c65da91771f65e632a06/test/manual-test-examples/tutorials/DOM-extensions/6/sketch.js
