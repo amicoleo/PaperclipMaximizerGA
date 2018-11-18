@@ -1,4 +1,4 @@
-v1
+<!-- v1
 
 1. Paperclip target in low-res (16x16 pixel or 32x32 pixels)
 2. Draw paperclip using higher resolution space (not in pixel art style)
@@ -21,3 +21,14 @@ User can screenshot and share
 
 v3
 - Use multiple canvases, for the paperclips on top https://github.com/processing/p5.js/blob/9d161432cdbaec2d18a8c65da91771f65e632a06/test/manual-test-examples/tutorials/DOM-extensions/6/sketch.js
+
+
+---- -->
+
+**Draw on the background of the whole body**
+
+
+<!-- 1. all items transparent -->
+2. paperclip under the items
+3. Images are transparent
+3. Choose the random one, not the best one

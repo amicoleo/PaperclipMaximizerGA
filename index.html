@@ -3,27 +3,27 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>Barebone Website</title>
-	<meta name="description" content="">
+	<title>Paperclip Maximizer Genetic Algorithm - Leonardo Amico</title>
+	<meta name="description" content="Choose the paperclip model you want to die into, when an AIs with wrong priorities come">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<!-- iOS only - This makes the website show in full screen (just status bar visible) when website added to home screen -->
 	<meta name="apple-mobile-web-app-capable" content="yes">
 
-	<meta property="og:title" content="Barebone Website" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:description" content="Barebone Website" />
+	<meta property="og:title" content="Paperclip Maximizer Genetic Algorithm - Leonardo Amico" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:description" content="Choose the paperclip model you want to die into, when an AIs with wrong priorities come" />
 
   <meta property="og:url" content="WEBSITEURL" />
 
-  <meta property="og:site_name" content="Barebone Website" />
+  <meta property="og:site_name" content="Paperclip Maximizer Genetic Algorithm - Leonardo Amico" />
   <meta property="og:type" content="website" />
 
 	<!-- 1200X600 displays uncropped on Twitter, Facebook, Linkedin - *IMPORTANT* to put full url of image, otherwise might not show on Twitter -->
 	<meta property="og:image" content="FULLIMAGEPATH" />
 
-	<meta name="twitter:title" content="Barebone Website" />
-	<meta name="twitter:description" content="Barebone Website" />
+	<meta name="twitter:title" content="Paperclip Maximizer Genetic Algorithm - Leonardo Amico" />
+	<meta name="twitter:description" content="Choose the paperclip model you want to die into, when an AIs with wrong priorities come" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@orgonomyprod" />
 	<meta name="twitter:creator" content="@orgonomyprod" />
@@ -36,13 +36,79 @@
 
 <body id="home">
 
+
+	<div class="content">
+		<div id="header">
+			<h1>PAPERCLIP MAXIMIZER G.A.</h1>
+			<p>A genetic algorithm evolving random points into the selected paperclip model. - Choose the paperclip model you want to die into, <a href="https://wiki.lesswrong.com/wiki/Paperclip_maximizer">when an AIs with wrong priorities come</a>.</p>
+			<div class="credits">
+				<a href="http://orgonomyproductions.info">Leonardo Amico</a> (with visual help by <a href="https://tomomimaezawa.com">Tomomi</a>)
+			</div>
+		</div>
+		<div id="paperclip-target-list">
+			<div class="paperclip-target gem selected">
+				<img src="images/gem.svg"></img>
+				<div class="name">Gem - 1892</div>
+			</div>
+			<div class="paperclip-target niagara">
+				<img src="images/niagara.svg"></img>
+				<div class="name">Niagara Clip - 1892</div>
+			</div>
+			<div class="paperclip-target owl">
+				<img src="images/owl.svg"></img>
+				<div class="name">Owl - 1902</div>
+			</div>
+
+		</div>
+		<div id="preview">
+			<div id="preview-image">
+			</div>
+			<!-- <div class="generations">Generations: <span id="number"></span> </div> -->
+			<div class="confidence"><span id="number"></span>/100 Paperclip Accuracy</div>
+		</div>
+	</div>
+
+	<div class="content bg" >
+		<div id="header">
+			<h1>PAPERCLIP MAXIMIZER G.A.</h1>
+			<p>A genetic algorithm evolving random points into the selected paperclip model. - Choose the paperclip model you want to die into, <a href="https://wiki.lesswrong.com/wiki/Paperclip_maximizer">when an AI with wrong priorities comes</a>.</p>
+			<div class="credits">
+				<a href="http://orgonomyproductions.info">Leonardo Amico</a> (with visual help by <a href="https://tomomimaezawa.com">Tomomi</a>)
+			</div>
+		</div>
+		<div id="paperclip-target-list">
+			<div class="paperclip-target gem">
+				<img src="images/gem.svg"></img>
+				<div class="name">Gem - 1892</div>
+			</div>
+			<div class="paperclip-target niagara">
+				<img src="images/niagara.svg"></img>
+				<div class="name">Niagara Clip - 1892</div>
+			</div>
+			<div class="paperclip-target owl">
+				<img src="images/owl.svg"></img>
+				<div class="name">Owl - 1902</div>
+			</div>
+
+		</div>
+		<div id="preview">
+			<div id="preview-image">
+			</div>
+			<div class="confidence">Confidence: <span id="number"></span></div>
+		</div>
+	</div>
+
+
 	<!-- <div id="container">
 		<h1>Hello - Barebone Website </h1>
 	</div> -->
 
+
   <script src="scripts/p5.min.js"></script>
+	<script src="scripts/p5.dom.js"></script>
   <script src="scripts/DNAVector.js"></script>
   <script src="scripts/targets.js"></script>
+  <script src="scripts/parameters.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 </html>

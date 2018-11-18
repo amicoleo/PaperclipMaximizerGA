@@ -10,10 +10,19 @@ class DNAVector {
     this.genes.length = target.length
 
     var step = 100/this.genes.length
+
+    // this.genes[0] = [parseInt(Math.random()*100), parseInt(Math.random()*100)]
     for (var i = 0; i < this.genes.length; i++) {
 
-      // v1 - random
+      // // v1 - following a path
+      // this.genes[i] = this.genes[i-1]
+      // this.genes[i][0]+=parseInt(Math.random())
+      // this.genes[i][1]+=parseInt(Math.random())
+
+      //v2
       this.genes[i] = [parseInt(Math.random()*100), parseInt(Math.random()*100)]
+
+
 
       // //v2 - straigh line
       // this.genes[i] = [

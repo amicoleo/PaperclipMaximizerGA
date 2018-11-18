@@ -1,25 +1,101 @@
-var target = [
-  [30, 72],
-  [30, 13],
-  [49, 0],
-  [69, 13],
-  [69, 90],
-  [51, 100],
-  [41, 89],
-  [41, 30],
-  [50, 23],
-  [58, 31],
-  [58, 70]
-]
 
-console.log(targets.gem);
-
-var mutationRate = 0.00002
-var nPopulation = 2000
-
+var population = []
+var target = []
 var paperclips = []
 
+var canvasPreview = null
+var canvasFull = null
+
+
+var lastMaxFitnessInt = 0
+var lastMaxFitnessTime = 0
+
+var paperclipTargets = document.querySelectorAll(".paperclip-target")
+paperclipTargets.forEach(function(paperclipTarget){
+  paperclipTarget.addEventListener("click",function(){
+
+    removeSelectedFromPaperclip()
+    startEvolution(this.className.split("paperclip-target ")[1])
+    this.classList.add('selected')
+  })
+})
+
+var removeSelectedFromPaperclip = function(){
+  var paperclipTargets = document.querySelectorAll(".paperclip-target")
+  paperclipTargets.forEach(function(paperclipTarget){
+    paperclipTarget.classList.remove('selected')
+  })
+}
+
+var startEvolution = function(targetName){
+
+  //create nPopulation elements with same genes as target
+  population = []
+  target = normalizeTarget(targets[targetName])
+  for (var i=0; i<parameters.nPopulation; i++){
+    population.push(new DNAVector(target, customFitnessFunction))
+  }
+
+  lastMaxFitnessInt = 0
+}
+
+
+var setup = function(){
+
+  //preview
+  var canvasPreview = createCanvas(document.body.offsetWidth, document.body.offsetHeight)
+  canvasPreview.parent("home")
+
+  startEvolution("gem")
+
+}
+
+var draw = function(){
+
+  if (frameCount%3 == 0) {
+
+    calcFitness()
+
+    clear()
+
+    // draw paperclips
+    for (key in paperclips){
+      push()
+      translate(paperclips[key].position.x, paperclips[key].position.y)
+      rotate(paperclips[key].rotation)
+
+      stroke(0)
+      translate(-1,-1)
+      drawPaperclip(paperclips[key])
+
+      pop()
+    }
+
+
+    // //preview bg
+    // noStroke()
+    // fill("#FFFFFC")
+    // rect(document.querySelector("#preview-image").getBoundingClientRect().x, document.querySelector("#preview-image").getBoundingClientRect().y, document.querySelector("#preview-image").getBoundingClientRect().width, document.querySelector("#preview-image").getBoundingClientRect().height)
+
+    //draw preview
+    strokeWeight(2)
+    translate(-2,-2)
+    stroke(0)
+    drawBestChild()
+
+    mate()
+
+  }
+}
+
+
 //
+var calcFitness = function(){
+  for (var i=0; i<population.length; i++){
+    population[i].calculateFitness()
+  }
+}
+
 var customFitnessFunction = function(genes){
   var maxDistance = Math.sqrt(2)*100
 
@@ -32,21 +108,8 @@ var customFitnessFunction = function(genes){
   var fitness = (1 - accDistance/target.length)
 
   return fitness
-
 }
 
-//Setup
-var population = []
-
-var setup = function(){
-
-  createCanvas(windowWidth, windowHeight);
-
-  //create nPopulation elements with same genes as target
-  for (var i=0; i<nPopulation; i++){
-    population.push(new DNAVector(target, customFitnessFunction))
-  }
-}
 
 var mate = function(){
   var matingPool = []
@@ -64,45 +127,79 @@ var mate = function(){
     var parentB = matingPool[b]
 
     var child = parentA.crossover(parentB)
-    child.mutate(mutationRate)
+    child.mutate(parameters.mutationRate)
 
     population[i] = child
 
   }
+}
+
+var drawPaperclip = function(element){
+
+  // //Broken
+  // noFill()
+  // beginShape()
+  // for (var i=0; i<element.genes.length; i++){
+  //   push()
+  //   vertex(element.genes[i][0], element.genes[i][1])
+  //   pop()
+  // }
+  // endShape()
+
+  //curved
+  noFill()
+  beginShape()
+  curveVertex(element.genes[0][0], element.genes[0][1])
+  for (var i=0; i<element.genes.length; i++){
+    push()
+    curveVertex(element.genes[i][0], element.genes[i][1])
+    pop()
+  }
+  curveVertex(element.genes[element.genes.length-1][0], element.genes[element.genes.length-1][1])
+  endShape()
+
 
 }
 
-var draw = function(){
+var drawBestChild = function(){
+  push()
 
-  // /LOOP
-  //1. Calculate fitness on dna
-  for (var i=0; i<population.length; i++){
-    population[i].calculateFitness()
+  translate(document.querySelector("#preview-image").getBoundingClientRect().x, document.querySelector("#preview-image").getBoundingClientRect().y )
+  scale(1.8, 1.8)
+
+  drawPaperclip(population[getBestChildIndex()])
+
+  var fitnessInt = parseInt(population[getBestChildIndex()].fitness*100)
+
+  var confidenceDiv = document.querySelector(".confidence #number")
+  confidenceDiv.textContent = fitnessInt
+
+  if (fitnessInt > lastMaxFitnessInt){
+    lastMaxFitnessTime = millis()
+    lastMaxFitnessInt = fitnessInt
   }
 
-
-  if (frameCount%4 == 0) {
-    background(255, 255, 255)
-    drawBestChild()
-
-    for (key in paperclips){
-      push()
-      translate(paperclips[key].position.x, paperclips[key].position.y)
-      rotate(paperclips[key].rotation)
-      drawPaperclip(paperclips[key])
-      pop()
-    }
+  if (millis() - lastMaxFitnessTime > parameters.stableConfidenceTime && fitnessInt==lastMaxFitnessInt){
+    confidenceDiv.style.color = "red"
+    confidenceDiv.style.fontWeight = 600
+    paperclips.push(population[getBestChildIndex()])
+  }else{
+    confidenceDiv.style.color = "black"
+    confidenceDiv.style.fontWeight = 400
   }
+  //
+  //
+  // if (fitnessInt > parameters.minConfidence){
+  //   confidenceDiv.style.color = "red"
+  //   confidenceDiv.style.fontWeight = 600
+  //   paperclips.push(population[getBestChildIndex()])
+  // }else{
+  //   confidenceDiv.style.color = "black"
+  //   confidenceDiv.style.fontWeight = 400
+  // }
 
-
-
-
-  //2. Update generation
-  //Mating Pool
-  mate()
-
+  pop()
 }
-
 
 var getBestChildIndex = function(){
 
@@ -116,54 +213,24 @@ var getBestChildIndex = function(){
   }
 
   return bestChild
-
 }
 
-var drawPaperclip = function(element){
+function normalizeTarget(targetRaw){
 
-  noFill()
-  beginShape()
-  for (var i=0; i<target.length; i++){
-    push()
-    vertex(element.genes[i][0], element.genes[i][1])
-    pop()
-  }
-  endShape()
+  var normTarget = []
+  for (var i = 0; i < targetRaw.length; i++) {
+    if (i%1 == 0){
 
-
-}
-
-var drawBestChild = function(){
-  push()
-
-  translate(width*.5 - 50, height*.5 - 50)
-  scale(2, 2)
-  drawPaperclip(population[getBestChildIndex()])
-
-  var fitnessInt = parseInt(population[getBestChildIndex()].fitness*100)
-
-  fill(255, 0, 0)
-  if (fitnessInt > 93){
-    text("PAPERCLIP!!!!!", 0, 100)
-    paperclips.push(population[getBestChildIndex()])
-  }else{
-    text("Confidence: "+fitnessInt, 0, 100)
+      var val = []
+      val[0] = targetRaw[i][0]*100
+      val[1] = targetRaw[i][1]*100
+      normTarget.push(val)
+    }
   }
 
-  pop()
+  return normTarget
 }
-
-
-var drawAll = function(){
-  for (var i=0; i<100; i++){
-    push()
-    translate(positions[i].x, positions[i].y)
-    drawPaperclip(population[i])
-    pop()
-  }
-}
-
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  resizeCanvas(document.body.offsetWidth, document.body.offsetHeight)
 }
