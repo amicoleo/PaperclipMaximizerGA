@@ -71,7 +71,6 @@ var draw = function(){
       pop()
     }
 
-
     // //preview bg
     // noStroke()
     // fill("#FFFFFC")

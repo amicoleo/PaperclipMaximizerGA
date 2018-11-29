@@ -19,26 +19,13 @@ class DNAVector {
       // this.genes[i][0]+=parseInt(Math.random())
       // this.genes[i][1]+=parseInt(Math.random())
 
-      //v2
+      //v2 - random
       this.genes[i] = [parseInt(Math.random()*100), parseInt(Math.random()*100)]
-
-
-
-      // //v2 - straigh line
-      // this.genes[i] = [
-      //   i*step,
-      //   i*step
-      // ]
 
       this.position = {x: Math.random()*width, y: Math.random()*height}
       this.rotation = Math.random()*2*Math.PI
 
-
-
     }
-
-
-
   }
 
   //
